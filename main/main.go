@@ -8,6 +8,6 @@ import (
 )
 
 func main() {
-	handler := http.HandlerFunc(server.PlayerServer)
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	server := &server.PlayerServer{}
+	log.Fatal(http.ListenAndServe(":8080", server))
 }
