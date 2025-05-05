@@ -4,25 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	server "github.com/anicse37/Player_Score_Tracker"
+	functions "github.com/anicse37/Player_Score_Tracker"
+	server "github.com/anicse37/Player_Score_Tracker/Servers"
 )
 
-type InMemoryStore struct {
-	score map[string]int
-}
-
-func (i *InMemoryStore) GetPlayerScore(name string) int {
-	return i.score[name]
-}
-func (i *InMemoryStore) RecordWin(name string) {}
-
 func main() {
-	Score := InMemoryStore{
-		map[string]int{
-			"Player-1": 20,
-			"Player-2": 10,
-		},
-	}
-	server := &server.PlayerServer{Store: &Score}
+	server := &server.PlayerServer{Store: functions.NewInMemoryStore()}
 	log.Fatal(http.ListenAndServe(":8080", server))
 }

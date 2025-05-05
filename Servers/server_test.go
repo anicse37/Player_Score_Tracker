@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	server "github.com/anicse37/Player_Score_Tracker"
+	server "github.com/anicse37/Player_Score_Tracker/Servers"
 )
 
 type StubPlayerStore struct {
@@ -31,9 +31,9 @@ func TestGETPlayers(t *testing.T) {
 		},
 		nil,
 	}
-	server1 := &server.PlayerServer{&Store}
+	server1 := &server.PlayerServer{Store: &Store}
 	t.Run("Return Player-1 Score", func(t *testing.T) {
-		request := server1.GetScoreRequest("Player-1")
+		request := server.GetScoreRequest("Player-1")
 		response := httptest.NewRecorder()
 
 		server1.ServeHTTP(response, request)
@@ -42,7 +42,7 @@ func TestGETPlayers(t *testing.T) {
 		AssertResponseBody(t, response.Body.String(), "20")
 	})
 	t.Run("Return Player-2 score", func(t *testing.T) {
-		request := server1.GetScoreRequest("Player-2")
+		request := server.GetScoreRequest("Player-2")
 		response := httptest.NewRecorder()
 
 		server1.ServeHTTP(response, request)
@@ -51,7 +51,7 @@ func TestGETPlayers(t *testing.T) {
 		AssertResponseBody(t, response.Body.String(), "10")
 	})
 	t.Run("Error 404, Not Found", func(t *testing.T) {
-		request := server1.GetScoreRequest("Player-3")
+		request := server.GetScoreRequest("Player-3")
 		response := httptest.NewRecorder()
 
 		server1.ServeHTTP(response, request)
@@ -79,7 +79,7 @@ func TestStoreWins(t *testing.T) {
 	server1 := &server.PlayerServer{&store}
 	t.Run("It Records wins when POST", func(t *testing.T) {
 		player := "Player-1"
-		request := server1.PostWinRequest(player)
+		request := server.PostWinRequest(player)
 		response := httptest.NewRecorder()
 
 		server1.ServeHTTP(response, request)
