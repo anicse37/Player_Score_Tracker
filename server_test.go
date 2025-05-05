@@ -23,6 +23,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
+		asstetStatus(t, response.Code, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), "20")
 	})
 	t.Run("Return Player-2 score", func(t *testing.T) {
@@ -31,11 +32,22 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
+		asstetStatus(t, response.Code, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), "10")
+	})
+	t.Run("Error 404, Not Found", func(t *testing.T) {
+		request := GetScoreRequest("Player-3")
+		response := httptest.NewRecorder()
+
+		server1.ServeHTTP(response, request)
+
+		asstetStatus(t, response.Code, http.StatusNotFound)
+
 	})
 }
 
 /*--------------------------------------------------------*/
+
 type StubPlayerStore struct {
 	scores map[string]int
 }
@@ -50,6 +62,12 @@ func GetScoreRequest(player string) *http.Request {
 	return request
 }
 
+func asstetStatus(t *testing.T, got, want int) {
+	if got != want {
+		t.Errorf("Got Status %v || Want Status %v \n", got, want)
+
+	}
+}
 func AssertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
