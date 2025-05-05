@@ -14,6 +14,7 @@ type InMemoryStore struct {
 func (i *InMemoryStore) GetPlayerScore(name string) int {
 	return i.score[name]
 }
+func (i *InMemoryStore) RecordWin(name string) {}
 
 func main() {
 	Score := InMemoryStore{

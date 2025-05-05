@@ -11,6 +11,6 @@ The server responds to HTTP GET requests. Currently, it returns a static score f
 ### Example Request
 
 ```http
-GET /players/Aniket HTTP/1.1
+GET /players/Player-1 HTTP/1.1
 
 
