@@ -23,5 +23,4 @@ func (i *InMemoryStore) GetLeague() []models.Player {
 		league = append(league, models.Player{Name: Name, Wins: Wins})
 	}
 	return league
-
 }

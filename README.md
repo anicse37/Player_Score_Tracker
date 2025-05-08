@@ -1,16 +1,73 @@
-# 🏏 Player Score Tracker (Go Web Server)
+# Player Score Tracker
 
-This is a basic HTTP server written in Go that returns a hardcoded score for a player. It's designed as a starting point to learn how to build and test web servers in Go.
+A simple RESTful API written in Go that tracks player scores, records wins, and displays a league leaderboard. It includes an in-memory store, file-based store, and full test coverage using the Go testing package.
+
+## Features
+
+- Record wins for players via HTTP POST
+- Retrieve player scores via HTTP GET
+- Return the current league table as JSON
+- In-memory and file-backed data stores
+- Modular project structure
+- Dockerized for easy deployment
+- Fully tested using `net/http/httptest`
+
+## Project Structure
+
+Application/
+├── main/ # Entry point
+│ └── main.go
+├── Models/ # Data models
+│ └── players.go
+├── Servers/ # HTTP server & test files
+│ ├── server.go
+│ ├── server_test.go
+│ └── server_integration_test.go
+├── functions.go # In-memory data store
+├── docker-compose.yml # Docker Compose setup
+├── Dockerfile # Dockerfile for building the container
+└── go.mod # Go module definition
+
+markdown
+Copy code
+
+## Getting Started
+
+### Prerequisites
+
+- [Go](https://golang.org/doc/install) 1.18+
+- [Docker](https://docs.docker.com/get-docker/) (optional, for containerized deployment)
+
+### Running Locally
+
+```bash
+go run main/main.go
+```
+
+### Running Tests
+
+```bash
+go test ./...
+```
+
+### Using Docker
+Build and run the container using:
 
 
+```bash
+docker build -t player-score-tracker .
+docker run -p 8080:8080 player-score-tracker
+```
 
-## 🚀 How It Works
+### Or use Docker Compose:
 
-The server responds to HTTP GET requests. Currently, it returns a static score for any request made to `/players/<playerName>`.
+```bash
+docker-compose up
+```
 
-### Example Request
+### API Endpoints
+GET /players/{name} - Get score for a specific player
 
-```http
-GET /players/Player-1 HTTP/1.1
+POST /players/{name} - Record a win for a player
 
-
+GET /league - Get league table as JSON
