@@ -1,10 +1,16 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 )
+
+type Player struct {
+	Name string
+	Wins int
+}
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
@@ -13,14 +19,34 @@ type PlayerStore interface {
 
 type PlayerServer struct {
 	Store PlayerStore
+	http.Handler
 }
 
-/*--------------------------------------------------------*/
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
-	if r.Method == http.MethodPost {
-		w.WriteHeader(http.StatusAccepted)
+/*------------------------------------------------------------------*/
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+
+	p.Store = store
+	router := http.NewServeMux()
+
+	router.Handle("/league", http.HandlerFunc(p.LeagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.PlayerHandler))
+	p.Handler = router
+	return p
+}
+
+/*------------------------------------------------------------------*/
+func (p *PlayerServer) LeagueHandler(w http.ResponseWriter, r *http.Request) {
+	leagueTable := []Player{
+		{"Aniket", 20},
 	}
+	json.NewEncoder(w).Encode(leagueTable)
+	w.WriteHeader(http.StatusOK)
+}
+func (p *PlayerServer) PlayerHandler(w http.ResponseWriter, r *http.Request) {
+
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
+
 	switch r.Method {
 	case http.MethodPost:
 		p.MethodPostFunction(w, player)
@@ -28,6 +54,8 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		p.MethodGetFunction(w, player)
 	}
 }
+
+/*------------------------------------------------------------------*/
 func (p *PlayerServer) MethodGetFunction(w http.ResponseWriter, player string) {
 
 	status := p.Store.GetPlayerScore(player)
@@ -39,19 +67,19 @@ func (p *PlayerServer) MethodGetFunction(w http.ResponseWriter, player string) {
 	fmt.Fprint(w, status)
 }
 
-/*--------------------------------------------------------*/
-
 func (p *PlayerServer) MethodPostFunction(w http.ResponseWriter, player string) {
 	p.Store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
+
+/*------------------------------------------------------------------*/
 
 func (p *PlayerServer) ProcessWin(w http.ResponseWriter, player string) {
 	p.Store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
 
-/*--------------------------------------------------------*/
+/*------------------------------------------------------------------*/
 func GetScoreRequest(player string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", player), nil)
 	return request
@@ -61,4 +89,4 @@ func PostWinRequest(name string) *http.Request {
 	return request
 }
 
-/*--------------------------------------------------------*/
+/*------------------------------------------------------------------*/

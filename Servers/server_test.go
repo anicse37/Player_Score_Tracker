@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,7 +32,7 @@ func TestGETPlayers(t *testing.T) {
 		},
 		nil,
 	}
-	server1 := &server.PlayerServer{Store: &Store}
+	server1 := server.NewPlayerServer(&Store)
 	t.Run("Return Player-1 Score", func(t *testing.T) {
 		request := server.GetScoreRequest("Player-1")
 		response := httptest.NewRecorder()
@@ -76,7 +77,7 @@ func TestStoreWins(t *testing.T) {
 		map[string]int{},
 		nil,
 	}
-	server1 := &server.PlayerServer{&store}
+	server1 := server.NewPlayerServer(&store)
 	t.Run("It Records wins when POST", func(t *testing.T) {
 		player := "Player-1"
 		request := server.PostWinRequest(player)
@@ -95,9 +96,29 @@ func TestStoreWins(t *testing.T) {
 		}
 	})
 }
+func TestLeague(t *testing.T) {
+	store := StubPlayerStore{}
+	server1 := server.NewPlayerServer(&store)
+
+	t.Run("It runs 200 on /league", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		response := httptest.NewRecorder()
+
+		server1.ServeHTTP(response, request)
+
+		var got []server.Player
+		err := json.NewDecoder(response.Body).Decode(&got)
+		if err != nil {
+			t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
+		}
+		server.AssertStatus(t, response.Code, http.StatusOK)
+	})
+
+}
 
 /*--------------------------------------------------------*/
 func AsstetStatus(t *testing.T, got, want int) {
+	t.Helper()
 	if got != want {
 		t.Errorf("Got Status %v || Want Status %v \n", got, want)
 
