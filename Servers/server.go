@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	models "github.com/anicse37/Player_Score_Tracker/Models"
 )
 
-type Player struct {
-	Name string
-	Wins int
-}
+const (
+	JSONContentType = "application/json"
+)
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []models.Player
 }
 
 type PlayerServer struct {
@@ -37,16 +39,11 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 /*------------------------------------------------------------------*/
 func (p *PlayerServer) LeagueHandler(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(GetLeagueTable())
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", JSONContentType)
+	json.NewEncoder(w).Encode(p.Store.GetLeague())
 }
-func GetLeagueTable() []Player {
-	return []Player{
-		{"Aniket", 20},
-	}
-}
-func (p *PlayerServer) PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
+func (p *PlayerServer) PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
 	switch r.Method {
