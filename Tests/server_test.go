@@ -179,9 +179,3 @@ func AssertLeague(t testing.TB, got, want []files.Player) {
 		t.Errorf("Got %v || Want %v\n", got, want)
 	}
 }
-func AssertScoreEquals(t testing.TB, got, want int) {
-	t.Helper()
-	if got != want {
-		t.Errorf("Got %v || Want %v\n", got, want)
-	}
-}

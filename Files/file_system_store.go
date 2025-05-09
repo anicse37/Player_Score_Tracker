@@ -4,26 +4,34 @@ import (
 	"io"
 )
 
-type FileSystemPlayerDatabase struct {
+type PlayerDatabase struct {
 	Database io.Reader
 }
-type FileSystemPlayerReadSeeker struct {
+type PlayerReadSeeker struct {
 	Database io.ReadSeeker
+}
+type PlayerReadWriteSeeker struct {
+	Database io.ReadWriteSeeker
 }
 
 /*---------------------------------------------------------------*/
-func (f *FileSystemPlayerDatabase) GetLeague() []Player {
+func (f *PlayerDatabase) GetLeague() []Player {
 	league, _ := NewLeague(f.Database)
 	return league
 }
-func (f *FileSystemPlayerReadSeeker) GetLeague() []Player {
+func (f *PlayerReadSeeker) GetLeague() []Player {
+	f.Database.Seek(0, io.SeekStart)
+	league, _ := NewLeague(f.Database)
+	return league
+}
+func (f *PlayerReadWriteSeeker) GetLeague() []Player {
 	f.Database.Seek(0, io.SeekStart)
 	league, _ := NewLeague(f.Database)
 	return league
 }
 
 /*---------------------------------------------------------------*/
-func (f *FileSystemPlayerReadSeeker) GetPlayerScore(name string) int {
+func (f *PlayerReadSeeker) GetPlayerScore(name string) int {
 	var wins int
 	for _, player := range f.GetLeague() {
 		if player.Name == name {
@@ -35,3 +43,13 @@ func (f *FileSystemPlayerReadSeeker) GetPlayerScore(name string) int {
 }
 
 /*---------------------------------------------------------------*/
+func (f *PlayerReadWriteSeeker) GetPlayerScore(name string) int {
+	var wins int
+	for _, player := range f.GetLeague() {
+		if player.Name == name {
+			wins = player.Wins
+
+		}
+	}
+	return wins
+}
