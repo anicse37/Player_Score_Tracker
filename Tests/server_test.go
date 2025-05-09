@@ -8,17 +8,17 @@ import (
 	"reflect"
 	"testing"
 
-	models "github.com/anicse37/Player_Score_Tracker/Models"
+	files "github.com/anicse37/Player_Score_Tracker/Files"
 	server "github.com/anicse37/Player_Score_Tracker/Servers"
 )
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []models.Player
+	league   []files.Player
 }
 
-func (s *StubPlayerStore) GetLeague() []models.Player {
+func (s *StubPlayerStore) GetLeague() []files.Player {
 	return s.league
 }
 
@@ -114,7 +114,7 @@ func TestLeague(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		var got []models.Player
+		var got []files.Player
 		err := json.NewDecoder(response.Body).Decode(&got)
 		if err != nil {
 			t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
@@ -122,7 +122,7 @@ func TestLeague(t *testing.T) {
 		AssertStatus(t, response.Code, http.StatusOK)
 	})
 	t.Run("Returns league table as JSON", func(t *testing.T) {
-		wantedLeague := []models.Player{
+		wantedLeague := []files.Player{
 			{Name: "Player-1", Wins: 10},
 			{Name: "Player-2", Wins: 20},
 			{Name: "Player-3", Wins: 30},
@@ -147,7 +147,7 @@ func TestLeague(t *testing.T) {
 }
 
 /*----------------------------------------------------------------------------------*/
-func GetLeagueFromResponse(t testing.TB, body io.Reader) (league []models.Player) {
+func GetLeagueFromResponse(t testing.TB, body io.Reader) (league []files.Player) {
 	t.Helper()
 	err := json.NewDecoder(body).Decode(&league)
 	if err != nil {
@@ -173,7 +173,7 @@ func AssertResponseBody(t *testing.T, got, want string) {
 		t.Errorf("Got %v || Want %v \n", got, want)
 	}
 }
-func AssertLeague(t testing.TB, got, want []models.Player) {
+func AssertLeague(t testing.TB, got, want []files.Player) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Got %v || Want %v\n", got, want)

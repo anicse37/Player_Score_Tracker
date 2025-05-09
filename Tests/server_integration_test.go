@@ -5,12 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	functions "github.com/anicse37/Player_Score_Tracker"
+	files "github.com/anicse37/Player_Score_Tracker/Files"
 	server "github.com/anicse37/Player_Score_Tracker/Servers"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := functions.NewInMemoryStore()
+	store := files.NewInMemoryStore()
 	server1 := server.NewPlayerServer(store)
 	player := "Pepper"
 

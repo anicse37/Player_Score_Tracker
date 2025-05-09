@@ -1,6 +1,4 @@
-package functions
-
-import models "github.com/anicse37/Player_Score_Tracker/Models"
+package files
 
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{map[string]int{}}
@@ -17,10 +15,10 @@ func (i *InMemoryStore) RecordWin(name string) {
 	i.score[name]++
 }
 
-func (i *InMemoryStore) GetLeague() []models.Player {
-	var league []models.Player
+func (i *InMemoryStore) GetLeague() []Player {
+	var league []Player
 	for Name, Wins := range i.score {
-		league = append(league, models.Player{Name: Name, Wins: Wins})
+		league = append(league, Player{Name: Name, Wins: Wins})
 	}
 	return league
 }

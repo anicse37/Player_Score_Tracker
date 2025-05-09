@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	models "github.com/anicse37/Player_Score_Tracker/Models"
+	files "github.com/anicse37/Player_Score_Tracker/Files"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
-	GetLeague() []models.Player
+	GetLeague() []files.Player
 }
 
 type PlayerServer struct {

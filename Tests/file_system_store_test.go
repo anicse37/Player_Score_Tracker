@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	files "github.com/anicse37/Player_Score_Tracker/Files"
-	models "github.com/anicse37/Player_Score_Tracker/Models"
 )
 
 func TestFileSystemStore(t *testing.T) {
@@ -20,7 +19,7 @@ func TestFileSystemStore(t *testing.T) {
 		store := files.FileSystemPlayerDatabase{Database: database}
 
 		got := store.GetLeague()
-		want := []models.Player{
+		want := []files.Player{
 			{Name: "Player-1", Wins: 10},
 			{Name: "Player-2", Wins: 20},
 			{Name: "Player-3", Wins: 30},
@@ -39,7 +38,7 @@ func TestFileSystemStore(t *testing.T) {
 		store := files.FileSystemPlayerReadSeeker{Database: database}
 
 		got := store.GetLeague()
-		want := []models.Player{
+		want := []files.Player{
 			{Name: "Player-1", Wins: 10},
 			{Name: "Player-2", Wins: 20},
 			{Name: "Player-3", Wins: 30},

@@ -2,8 +2,6 @@ package files
 
 import (
 	"io"
-
-	models "github.com/anicse37/Player_Score_Tracker/Models"
 )
 
 type FileSystemPlayerDatabase struct {
@@ -14,11 +12,11 @@ type FileSystemPlayerReadSeeker struct {
 }
 
 /*---------------------------------------------------------------*/
-func (f *FileSystemPlayerDatabase) GetLeague() []models.Player {
+func (f *FileSystemPlayerDatabase) GetLeague() []Player {
 	league, _ := NewLeague(f.Database)
 	return league
 }
-func (f *FileSystemPlayerReadSeeker) GetLeague() []models.Player {
+func (f *FileSystemPlayerReadSeeker) GetLeague() []Player {
 	f.Database.Seek(0, io.SeekStart)
 	league, _ := NewLeague(f.Database)
 	return league
