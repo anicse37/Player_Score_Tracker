@@ -105,6 +105,25 @@ func TestReadUsingFiles(t *testing.T) {
 
 }
 
+func TestRecordWin(t *testing.T) {
+	t.Run("Record Win", func(t *testing.T) {
+		database, cleanDatabase := CreateTempFile(t, `[
+		{"Name":"Player-1","Wins":10},
+		{"Name":"Player-2","Wins":20},
+		{"Name":"Player-3","Wins":30}
+		]`)
+		defer cleanDatabase()
+
+		store := files.PlayerReadWriteSeeker{Database: database}
+
+		store.RecordWin("Player-2")
+
+		got := store.GetPlayerScore("Player-2")
+		want := 21
+		AssertScoreEquals(t, got, want)
+	})
+}
+
 /*------------------------------------------------------------------*/
 func CreateTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
 	t.Helper()
