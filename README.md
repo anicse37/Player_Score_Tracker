@@ -18,28 +18,40 @@ A simple RESTful API written in Go that tracks player scores, records wins, and 
   <summary><strong>📁 Application</strong></summary>
 
   <details>
+    <summary>📂 Files</summary>
+
+    - file_system_stoe.go  
+    - functions.go
+    - league.go
+    - players.go
+   
+  </details>
+
+  <details>
     <summary>📂 main</summary>
 
     - main.go
   </details>
 
   <details>
-    <summary>📂 Models</summary>
-
-    - players.go
-  </details>
-
-  <details>
     <summary>📂 Servers</summary>
 
     - server.go  
-    - server_test.go  
-    - server_integration_test.go
+   
   </details>
 
-  - functions.go  
-  - Dockerfile  
+  <details>
+    <summary>📂 Tests</summary>
+
+    - file_system_store_test.go
+    - server_integration_test.go
+    - server_test.go  
+
+  </details>
+
+
   - docker-compose.yml  
+  - Dockerfile  
   - go.mod
 </details>
 
