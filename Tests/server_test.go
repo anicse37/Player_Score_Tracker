@@ -6,10 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
-	files "github.com/anicse37/Player_Score_Tracker/Files"
 	models "github.com/anicse37/Player_Score_Tracker/Models"
 	server "github.com/anicse37/Player_Score_Tracker/Servers"
 )
@@ -50,7 +48,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		AsstetStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response.Code, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), "20")
 	})
 	t.Run("Return Player-2 score", func(t *testing.T) {
@@ -59,7 +57,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		AsstetStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response.Code, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), "10")
 	})
 	t.Run("Error 404, Not Found", func(t *testing.T) {
@@ -68,7 +66,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		AsstetStatus(t, response.Code, http.StatusNotFound)
+		AssertStatus(t, response.Code, http.StatusNotFound)
 	})
 	t.Run("It returs accepted on Post", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodPost, "/players/Player-1", nil)
@@ -76,7 +74,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		AsstetStatus(t, response.Code, http.StatusAccepted)
+		AssertStatus(t, response.Code, http.StatusAccepted)
 	})
 }
 
@@ -95,7 +93,7 @@ func TestStoreWins(t *testing.T) {
 
 		server1.ServeHTTP(response, request)
 
-		AsstetStatus(t, response.Code, http.StatusAccepted)
+		AssertStatus(t, response.Code, http.StatusAccepted)
 
 		if len(store.winCalls) != 1 {
 			t.Errorf("Got %d || Want %d\n", len(store.winCalls), 1)
@@ -121,7 +119,7 @@ func TestLeague(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
 		}
-		server.AssertStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response.Code, http.StatusOK)
 	})
 	t.Run("Returns league table as JSON", func(t *testing.T) {
 		wantedLeague := []models.Player{
@@ -143,29 +141,8 @@ func TestLeague(t *testing.T) {
 		if response.Result().Header.Get("content-type") != "application/json" {
 			t.Errorf("response did not have content-type of application/json, got %v", response.Result().Header)
 		}
-		AsstetStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response.Code, http.StatusOK)
 		AssertLeague(t, got, wantedLeague)
-	})
-}
-
-func TestFileSystemStore(t *testing.T) {
-	t.Run("League from a reader", func(t *testing.T) {
-		database := strings.NewReader(`
-		[
-		{"Name": "Player-1","Wins": 10},
-		{"Name": "Player-2","Wins": 20},
-		{"Name": "Player-3","Wins": 30}
-		]`)
-
-		store := files.FileSystemPlayerDatabase{Database: database}
-
-		got := store.GetLeague()
-		want := []models.Player{
-			{Name: "Player-1", Wins: 10},
-			{Name: "Player-2", Wins: 20},
-			{Name: "Player-3", Wins: 30},
-		}
-		AssertLeague(t, got, want)
 	})
 }
 
@@ -184,7 +161,7 @@ func NewLeagueRequest() *http.Request {
 }
 
 /*--------------------------------------------------------*/
-func AsstetStatus(t *testing.T, got, want int) {
+func AssertStatus(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("Got Status %v || Want Status %v \n", got, want)
@@ -199,6 +176,12 @@ func AssertResponseBody(t *testing.T, got, want string) {
 func AssertLeague(t testing.TB, got, want []models.Player) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Got %v || Want %v\n", got, want)
+	}
+}
+func AssertScoreEquals(t testing.TB, got, want int) {
+	t.Helper()
+	if got != want {
 		t.Errorf("Got %v || Want %v\n", got, want)
 	}
 }
