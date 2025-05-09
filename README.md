@@ -14,19 +14,35 @@ A simple RESTful API written in Go that tracks player scores, records wins, and 
 
 ## Project Structure
 
-Application/
-├── main/ # Entry point
-│ └── main.go
-├── Models/ # Data models
-│ └── players.go
-├── Servers/ # HTTP server & test files
-│ ├── server.go
-│ ├── server_test.go
-│ └── server_integration_test.go
-├── functions.go # In-memory data store
-├── docker-compose.yml # Docker Compose setup
-├── Dockerfile # Dockerfile for building the container
-└── go.mod # Go module definition
+<details>
+  <summary><strong>📁 Application</strong></summary>
+
+  <details>
+    <summary>📂 main</summary>
+
+    - main.go
+  </details>
+
+  <details>
+    <summary>📂 Models</summary>
+
+    - players.go
+  </details>
+
+  <details>
+    <summary>📂 Servers</summary>
+
+    - server.go  
+    - server_test.go  
+    - server_integration_test.go
+  </details>
+
+  - functions.go  
+  - Dockerfile  
+  - docker-compose.yml  
+  - go.mod
+</details>
+
 
 markdown
 Copy code
