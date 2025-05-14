@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 )
 
 type PlayerReadWriteSeeker struct {
@@ -14,7 +15,10 @@ type PlayerReadWriteSeeker struct {
 
 /*---------------------------------------------------------------*/
 
-func (f *PlayerReadWriteSeeker) GetLeague() []Player {
+func (f *PlayerReadWriteSeeker) GetLeague() League {
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
 	return f.league
 }
 
@@ -39,17 +43,37 @@ func (f *PlayerReadWriteSeeker) RecordWin(name string) {
 }
 
 /*------------------------------------------------------------*/
-func NewPlayerReadWriteSeeker(database *os.File) (*PlayerReadWriteSeeker, error) {
-	database.Seek(0, io.SeekStart)
-	league, err := NewLeague(database)
+func NewPlayerReadWriteSeeker(file *os.File) (*PlayerReadWriteSeeker, error) {
+	err := InitialisePlayerDBFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem initilising player db file %v", err)
+
+	}
+
+	league, err := NewLeague(file)
 
 	if err != nil {
-		return nil, fmt.Errorf("problem loading player store from file %s, %v", database.Name(), err)
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
 	}
 
 	return &PlayerReadWriteSeeker{
-			Database: json.NewEncoder(&Tape{File: database}),
+			Database: json.NewEncoder(&Tape{File: file}),
 			league:   league,
 		},
 		nil
+}
+func InitialisePlayerDBFile(file *os.File) error {
+	file.Seek(0, io.SeekStart)
+
+	info, err := file.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, io.SeekStart)
+	}
+	return nil
 }
