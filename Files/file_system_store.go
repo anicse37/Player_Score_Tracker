@@ -13,6 +13,7 @@ type PlayerReadSeeker struct {
 }
 type PlayerReadWriteSeeker struct {
 	Database io.ReadWriteSeeker
+	league   League
 }
 
 /*---------------------------------------------------------------*/
@@ -26,9 +27,7 @@ func (f *PlayerReadSeeker) GetLeague() []Player {
 	return league
 }
 func (f *PlayerReadWriteSeeker) GetLeague() []Player {
-	f.Database.Seek(0, io.SeekStart)
-	league, _ := NewLeague(f.Database)
-	return league
+	return f.league
 }
 
 /*---------------------------------------------------------------*/
@@ -43,38 +42,33 @@ func (f *PlayerReadSeeker) GetPlayerScore(name string) int {
 	return wins
 }
 func (f *PlayerReadWriteSeeker) GetPlayerScore(name string) int {
-	var wins int
-	for _, player := range f.GetLeague() {
-		if player.Name == name {
-			wins = player.Wins
-
-		}
+	player := f.league.Find(name)
+	if player != nil {
+		return player.Wins
 	}
-	return wins
+	return 0
 }
-
-/*---------------------------------------------------------------*/
-// func (f *PlayerReadWriteSeeker) GetPlayerScore(name string) int {
-// 	player := f.GetLeague().Find(name)
-
-// 	if player != nil {
-// 		return player.Wins
-// 	}
-
-// 	return 0
-// }
 
 /*-------------RecordWin---------------*/
 func (f *PlayerReadWriteSeeker) RecordWin(name string) {
-	league := f.GetLeague()
-	player := League.Find(league, name)
+	player := f.league.Find(name)
 
 	if player != nil {
 		player.Wins++
 	} else {
-		league = append(league, Player{Name: name, Wins: 1})
+		f.league = append(f.league, Player{Name: name, Wins: 1})
 	}
 
 	f.Database.Seek(0, io.SeekStart)
-	json.NewEncoder(f.Database).Encode(league)
+	json.NewEncoder(f.Database).Encode(f.league)
+}
+
+/*------------------------------------------------------------*/
+func NewPlayerReadWriteSeeker(database io.ReadWriteSeeker) *PlayerReadWriteSeeker {
+	database.Seek(0, io.SeekStart)
+	league, _ := NewLeague(database)
+	return &PlayerReadWriteSeeker{
+		Database: database,
+		league:   league,
+	}
 }

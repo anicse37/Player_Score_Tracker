@@ -75,7 +75,7 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.PlayerReadWriteSeeker{Database: database}
+		store := files.NewPlayerReadWriteSeeker(database)
 
 		got := store.GetLeague()
 		want := []files.Player{
@@ -96,7 +96,7 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.PlayerReadWriteSeeker{Database: database}
+		store := files.NewPlayerReadWriteSeeker(database)
 
 		got := store.GetPlayerScore("Player-1")
 		want := 10
@@ -114,7 +114,7 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.PlayerReadWriteSeeker{Database: database}
+		store := files.NewPlayerReadWriteSeeker(database)
 
 		store.RecordWin("Player-2")
 
@@ -130,7 +130,7 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.PlayerReadWriteSeeker{Database: database}
+		store := files.NewPlayerReadWriteSeeker(database)
 
 		store.RecordWin("Player-4")
 
