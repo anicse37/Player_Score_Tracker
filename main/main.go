@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Problem opening %s, %v", dbFileName, err)
 	}
-	store := files.NewPlayerReadWriteSeeker(db)
+
+	store, err1 := files.NewPlayerReadWriteSeeker(db)
+	if err1 != nil {
+		fmt.Printf("didn't expect an error but got one, %v", err)
+	}
+
 	server := server.NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":8080", server); err != nil {
