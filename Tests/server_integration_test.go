@@ -11,9 +11,13 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
-	database, cleanDatabase := CreateTempFile(t, "")
+	database, cleanDatabase := CreateTempFile(t, `[]`)
 	defer cleanDatabase()
-	store := files.NewPlayerReadWriteSeeker(database)
+	store, err := files.NewPlayerReadWriteSeeker(database)
+
+	if err != nil {
+		t.Fatalf("didn't expect an error but got one, %v", err)
+	}
 	server1 := server.NewPlayerServer(store)
 	player := "Player-2"
 

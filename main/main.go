@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Problem opening %s, %v", dbFileName, err)
 	}
-	store := &files.PlayerReadWriteSeeker{Database: db}
+	store := files.NewPlayerReadWriteSeeker(db)
 	server := server.NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":8080", server); err != nil {

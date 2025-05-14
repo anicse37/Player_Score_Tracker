@@ -2,6 +2,7 @@ package files
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 )
@@ -38,11 +39,17 @@ func (f *PlayerReadWriteSeeker) RecordWin(name string) {
 }
 
 /*------------------------------------------------------------*/
-func NewPlayerReadWriteSeeker(database *os.File) *PlayerReadWriteSeeker {
+func NewPlayerReadWriteSeeker(database *os.File) (*PlayerReadWriteSeeker, error) {
 	database.Seek(0, io.SeekStart)
-	league, _ := NewLeague(database)
-	return &PlayerReadWriteSeeker{
-		Database: json.NewEncoder(&Tape{File: database}),
-		league:   league,
+	league, err := NewLeague(database)
+
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", database.Name(), err)
 	}
+
+	return &PlayerReadWriteSeeker{
+			Database: json.NewEncoder(&Tape{File: database}),
+			league:   league,
+		},
+		nil
 }

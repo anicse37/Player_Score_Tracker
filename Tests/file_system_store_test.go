@@ -17,8 +17,10 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.NewPlayerReadWriteSeeker(database)
-
+		store, err := files.NewPlayerReadWriteSeeker(database)
+		if err != nil {
+			t.Fatalf("didn't expect an error but got one, %v", err)
+		}
 		got := store.GetLeague()
 		want := []files.Player{
 			{Name: "Player-1", Wins: 10},
@@ -38,7 +40,11 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerReadWriteSeeker(database)
+
+		if err != nil {
+			t.Fatalf("didn't expect an error but got one, %v", err)
+		}
 
 		got := store.GetPlayerScore("Player-1")
 		want := 10
@@ -56,7 +62,11 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerReadWriteSeeker(database)
+
+		if err != nil {
+			t.Fatalf("didn't expect an error but got one, %v", err)
+		}
 
 		store.RecordWin("Player-2")
 
@@ -72,7 +82,11 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerReadWriteSeeker(database)
+
+		if err != nil {
+			t.Fatalf("didn't expect an error but got one, %v", err)
+		}
 
 		store.RecordWin("Player-4")
 
