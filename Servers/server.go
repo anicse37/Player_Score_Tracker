@@ -71,13 +71,6 @@ func (p *PlayerServer) MethodPostFunction(w http.ResponseWriter, player string) 
 }
 
 /*------------------------------------------------------------------*/
-
-func (p *PlayerServer) ProcessWin(w http.ResponseWriter, player string) {
-	p.Store.RecordWin(player)
-	w.WriteHeader(http.StatusAccepted)
-}
-
-/*------------------------------------------------------------------*/
 func GetScoreRequest(player string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", player), nil)
 	return request

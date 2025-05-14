@@ -23,7 +23,7 @@ func main() {
 
 	store, err1 := files.NewPlayerReadWriteSeeker(db)
 	if err1 != nil {
-		fmt.Printf("didn't expect an error but got one, %v", err)
+		fmt.Printf("didn't expect an error but got one, %v", err1)
 	}
 
 	server := server.NewPlayerServer(store)
