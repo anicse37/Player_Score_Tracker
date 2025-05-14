@@ -14,4 +14,4 @@ RUN go mod download
 COPY . .
 
 # Run tests by default
-CMD ["go", "test", "-v","./..."]
+CMD ["go", "test","./..."]
