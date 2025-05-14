@@ -106,7 +106,7 @@ func TestReadUsingFiles(t *testing.T) {
 }
 
 func TestRecordWin(t *testing.T) {
-	t.Run("Record Win", func(t *testing.T) {
+	t.Run("Old Player", func(t *testing.T) {
 		database, cleanDatabase := CreateTempFile(t, `[
 		{"Name":"Player-1","Wins":10},
 		{"Name":"Player-2","Wins":20},
@@ -120,6 +120,22 @@ func TestRecordWin(t *testing.T) {
 
 		got := store.GetPlayerScore("Player-2")
 		want := 21
+		AssertScoreEquals(t, got, want)
+	})
+	t.Run("New Player", func(t *testing.T) {
+		database, cleanDatabase := CreateTempFile(t, `[
+		{"Name":"Player-1","Wins":10},
+		{"Name":"Player-2","Wins":20},
+		{"Name":"Player-3","Wins":30}
+		]`)
+		defer cleanDatabase()
+
+		store := files.PlayerReadWriteSeeker{Database: database}
+
+		store.RecordWin("Player-4")
+
+		got := store.GetPlayerScore("Player-4")
+		want := 1
 		AssertScoreEquals(t, got, want)
 	})
 }
