@@ -1,69 +1,11 @@
 package server_test
 
 import (
-	"io"
 	"os"
-	"strings"
 	"testing"
 
 	files "github.com/anicse37/Player_Score_Tracker/Files"
 )
-
-func TestStore(t *testing.T) {
-	t.Run("League from a reader", func(t *testing.T) {
-		database := strings.NewReader(`
-		[
-			{"Name": "Player-1","Wins": 10},
-			{"Name": "Player-2","Wins": 20},
-			{"Name": "Player-3","Wins": 30}
-		]`)
-
-		store := files.PlayerDatabase{Database: database}
-
-		got := store.GetLeague()
-		want := []files.Player{
-			{Name: "Player-1", Wins: 10},
-			{Name: "Player-2", Wins: 20},
-			{Name: "Player-3", Wins: 30},
-		}
-
-		AssertLeague(t, got, want)
-	})
-	t.Run("League Twice from a reader", func(t *testing.T) {
-		database := strings.NewReader(`
-		[
-			{"Name": "Player-1","Wins": 10},
-			{"Name": "Player-2","Wins": 20},
-		{"Name": "Player-3","Wins": 30}
-		]`)
-
-		store := files.PlayerReadSeeker{Database: database}
-
-		got := store.GetLeague()
-		want := []files.Player{
-			{Name: "Player-1", Wins: 10},
-			{Name: "Player-2", Wins: 20},
-			{Name: "Player-3", Wins: 30},
-		}
-		AssertLeague(t, got, want)
-		got = store.GetLeague()
-		AssertLeague(t, got, want)
-	})
-
-	t.Run("Get Player Score", func(t *testing.T) {
-		database := strings.NewReader(`[
-				{"Name":"Player-1","Wins":10},
-				{"Name":"Player-2","Wins":20},
-				{"Name":"Player-3","Wins":30}
-				]`)
-		store := files.PlayerReadSeeker{Database: database}
-
-		got := store.GetPlayerScore("Player-2")
-		want := 20
-
-		AssertScoreEquals(t, got, want)
-	})
-}
 
 /*------------------------------------------------------------------*/
 func TestReadUsingFiles(t *testing.T) {
@@ -141,7 +83,7 @@ func TestRecordWin(t *testing.T) {
 }
 
 /*------------------------------------------------------------------*/
-func CreateTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
+func CreateTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tempfile, err := os.CreateTemp("", "db")
@@ -155,7 +97,6 @@ func CreateTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func(
 		tempfile.Close()
 		os.Remove(tempfile.Name())
 	}
-
 	return tempfile, removeFile
 }
 

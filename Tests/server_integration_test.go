@@ -13,7 +13,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 	database, cleanDatabase := CreateTempFile(t, "")
 	defer cleanDatabase()
-	store := &files.PlayerReadWriteSeeker{Database: database}
+	store := files.NewPlayerReadWriteSeeker(database)
 	server1 := server.NewPlayerServer(store)
 	player := "Player-2"
 
