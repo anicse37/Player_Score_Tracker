@@ -179,3 +179,14 @@ func AssertLeague(t testing.TB, got, want []files.Player) {
 		t.Errorf("Got %v || Want %v\n", got, want)
 	}
 }
+func AssertPlayerWin(t testing.TB, store *StubPlayerStore, winner string) {
+	t.Helper()
+
+	if len(store.winCalls) != 1 {
+		t.Fatalf("Got %v || Want %v ", len(store.winCalls), 1)
+	}
+
+	if store.winCalls[0] != winner {
+		t.Errorf("did not get the correct winner got %v || Want %v ", store.winCalls, winner)
+	}
+}
