@@ -1,8 +1,10 @@
 package server_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/anicse37/Player_Score_Tracker/cmd"
 )
@@ -29,16 +31,50 @@ func TestCLI(t *testing.T) {
 
 		AssertPlayerWin(t, playerStore, "Aniket")
 	})
+	// t.Run("it schedules printing of blind values", func(t *testing.T) {
+	// 	in := strings.NewReader("Ani wins\n")
+	// 	playerStore := &StubPlayerStore{}
+	// 	BlindAlerter := &cmd.SpyBlindAlerter{}
+
+	// 	cli := cmd.NewCLIWithBlindAlterter(playerStore, in, BlindAlerter)
+	// 	cli.PlayPokerWithBlindAlerter()
+
+	// 	if len(BlindAlerter.Alerts) != 1 {
+	// 		t.Fatal("expected a blind alert to be scheduled")
+	// 	}
+	// })
 	t.Run("it schedules printing of blind values", func(t *testing.T) {
 		in := strings.NewReader("Ani wins\n")
 		playerStore := &StubPlayerStore{}
-		BlindAlerter := &cmd.SpyBlindAlerter{}
+		blindAlerter := &cmd.SpyBlindAlerter{}
 
-		cli := cmd.NewCLIWithBlindAlterter(playerStore, in, BlindAlerter)
+		cli := cmd.NewCLIWithBlindAlterter(playerStore, in, blindAlerter)
 		cli.PlayPokerWithBlindAlerter()
 
-		if len(BlindAlerter.Alerts) != 1 {
-			t.Fatal("expected a blind alert to be scheduled")
+		cases := []cmd.ScheduledAlert{
+			{At: 0 * time.Second, Amount: 100},
+			{At: 10 * time.Minute, Amount: 200},
+			{At: 20 * time.Minute, Amount: 300},
+			{At: 30 * time.Minute, Amount: 400},
+			{At: 40 * time.Minute, Amount: 500},
+			{At: 50 * time.Minute, Amount: 600},
+			{At: 60 * time.Minute, Amount: 800},
+			{At: 70 * time.Minute, Amount: 1000},
+			{At: 80 * time.Minute, Amount: 2000},
+			{At: 90 * time.Minute, Amount: 4000},
+			{At: 100 * time.Minute, Amount: 8000},
+		}
+
+		for i, want := range cases {
+			t.Run(fmt.Sprintf(want.String()), func(t *testing.T) {
+
+				if len(blindAlerter.Alerts) <= i {
+					t.Fatalf("alert %d was not scheduled %v", i, blindAlerter.Alerts)
+				}
+				got := blindAlerter.Alerts[i]
+
+				AssertScheduledAlert(t, got.String(), want.String())
+			})
 		}
 	})
 }

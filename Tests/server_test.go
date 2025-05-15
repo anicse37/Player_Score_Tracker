@@ -190,3 +190,9 @@ func AssertPlayerWin(t testing.TB, store *StubPlayerStore, winner string) {
 		t.Errorf("did not get the correct winner got %v || Want %v ", store.winCalls, winner)
 	}
 }
+func AssertScheduledAlert(t testing.TB, got, want string) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Got %v || Want %v\n", got, want)
+	}
+}
