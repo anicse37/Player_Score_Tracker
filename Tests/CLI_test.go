@@ -13,7 +13,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("Ani wins\n")
 		playerStore := &StubPlayerStore{}
 
-		cli := &cmd.CLI{PlayerStore: playerStore, In: in}
+		cli := cmd.NewCLI(playerStore, in)
 		cli.PlayPoker()
 
 		AssertPlayerWin(t, playerStore, "Ani")
@@ -22,7 +22,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("Aniket wins\n")
 		playerStore := &StubPlayerStore{}
 
-		cli := &cmd.CLI{PlayerStore: playerStore, In: in}
+		cli := cmd.NewCLI(playerStore, in)
 		cli.PlayPoker()
 
 		AssertPlayerWin(t, playerStore, "Aniket")

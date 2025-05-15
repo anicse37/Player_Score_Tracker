@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	files "github.com/anicse37/Player_Score_Tracker/Files"
-	server "github.com/anicse37/Player_Score_Tracker/Servers"
+	"github.com/anicse37/Player_Score_Tracker/cmd"
 )
 
 const (
@@ -15,6 +14,9 @@ const (
 )
 
 func main() {
+	fmt.Println("Let's Play a Game")
+	fmt.Println("Type {Name} wins to record a win")
+
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
@@ -26,9 +28,6 @@ func main() {
 		fmt.Printf("didn't expect an error but got one, %v", err1)
 	}
 
-	server := server.NewPlayerServer(store)
-
-	if err := http.ListenAndServe(":8080", server); err != nil {
-		log.Fatalf("Could not listen on port 8080 %v", err)
-	}
+	game := cmd.NewCLI(store, os.Stdin)
+	game.PlayPoker()
 }
