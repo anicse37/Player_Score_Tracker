@@ -7,8 +7,6 @@ import (
 	"github.com/anicse37/Player_Score_Tracker/cmd"
 )
 
-var DummySpyAlerter = &cmd.SpyBlindAlerter{}
-
 func TestCLI(t *testing.T) {
 	t.Run("Record Ani win from user input", func(t *testing.T) {
 
