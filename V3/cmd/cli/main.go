@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -23,5 +24,6 @@ func main() {
 	fmt.Println("Let's Play a Game")
 	fmt.Println("Type {Name} wins to record a win")
 
-	cmd.NewCLI(store, os.Stdin, cmd.BlindAlerterFunc(cmd.StdOutAlerter)).PlayPoker()
+	reader := bufio.NewReader(os.Stdin)
+	cmd.NewCLI(store, reader, os.Stdin, cmd.BlindAlerterFunc(cmd.StdOutAlerter)).PlayPoker()
 }
