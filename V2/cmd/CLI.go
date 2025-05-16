@@ -44,10 +44,6 @@ type SpyBlindAlerter struct {
 /*---------------------------------------------------------------*/
 
 func (cli *CLI) PlayPoker() {
-	reader := cli.readline()
-	cli.PlayerStore.RecordWin(extractWinner(reader))
-}
-func (cli *CLI) PlayPokerWithBlindAlerter() {
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
@@ -64,13 +60,7 @@ func (s ScheduledAlert) String() string {
 }
 
 /*---------------------------------------------------------------*/
-func NewCLI(store server.PlayerStore, in io.Reader) *CLI {
-	return &CLI{
-		PlayerStore: store,
-		In:          bufio.NewScanner(in),
-	}
-}
-func NewCLIWithBlindAlterter(store server.PlayerStore, in io.Reader, alteter BlindAlerter) *CLI {
+func NewCLI(store server.PlayerStore, in io.Reader, alteter BlindAlerter) *CLI {
 	return &CLI{
 		PlayerStore: store,
 		In:          bufio.NewScanner(in),
