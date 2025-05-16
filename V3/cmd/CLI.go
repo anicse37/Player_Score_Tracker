@@ -5,10 +5,15 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	server "github.com/anicse37/Player_Score_Tracker/Servers"
+)
+
+const (
+	PromptText = "Please enter the number of players: "
 )
 
 type BlindAlerter interface {
@@ -31,6 +36,7 @@ func StdOutAlerter(duration time.Duration, amount int) {
 type CLI struct {
 	PlayerStore server.PlayerStore
 	In          *bufio.Scanner
+	out         io.Writer
 	Alerter     BlindAlerter
 }
 type ScheduledAlert struct {
@@ -44,12 +50,12 @@ type SpyBlindAlerter struct {
 /*---------------------------------------------------------------*/
 
 func (cli *CLI) PlayPoker() {
-	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
-	for _, blind := range blinds {
-		cli.Alerter.ScheduledAlertAt(blindTime, blind)
-		blindTime += 10 * time.Minute
-	}
+	fmt.Fprint(cli.out, PromptText)
+
+	number_of_players, _ := strconv.Atoi(cli.readline())
+
+	cli.ScheduleBlindAlerts(number_of_players)
+
 	reader := cli.readline()
 	cli.PlayerStore.RecordWin(extractWinner(reader))
 }
@@ -60,10 +66,11 @@ func (s ScheduledAlert) String() string {
 }
 
 /*---------------------------------------------------------------*/
-func NewCLI(store server.PlayerStore, in io.Reader, alteter BlindAlerter) *CLI {
+func NewCLI(store server.PlayerStore, in io.Reader, out io.Writer, alteter BlindAlerter) *CLI {
 	return &CLI{
 		PlayerStore: store,
 		In:          bufio.NewScanner(in),
+		out:         out,
 		Alerter:     alteter,
 	}
 }
@@ -81,3 +88,14 @@ func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
 }
 
 /*---------------------------------------------------------------*/
+
+func (cli *CLI) ScheduleBlindAlerts(number int) {
+	blindIncrement := time.Duration(5+number) * time.Minute
+
+	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
+	blindTime := 0 * time.Second
+	for _, blind := range blinds {
+		cli.Alerter.ScheduledAlertAt(blindTime, blind)
+		blindTime = blindTime + blindIncrement
+	}
+}
