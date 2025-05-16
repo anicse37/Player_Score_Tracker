@@ -31,18 +31,15 @@ func TestCLI(t *testing.T) {
 
 		AssertPlayerWin(t, playerStore, "Aniket")
 	})
-	// t.Run("it schedules printing of blind values", func(t *testing.T) {
-	// 	in := strings.NewReader("Ani wins\n")
-	// 	playerStore := &StubPlayerStore{}
-	// 	BlindAlerter := &cmd.SpyBlindAlerter{}
+	t.Run("it schedules printing of blind values", func(t *testing.T) {
+		in := strings.NewReader("Ani wins\n")
+		playerStore := &StubPlayerStore{}
 
-	// 	cli := cmd.NewCLIWithBlindAlterter(playerStore, in, BlindAlerter)
-	// 	cli.PlayPokerWithBlindAlerter()
+		cli := cmd.NewCLI(playerStore, in)
+		cli.PlayPoker()
 
-	// 	if len(BlindAlerter.Alerts) != 1 {
-	// 		t.Fatal("expected a blind alert to be scheduled")
-	// 	}
-	// })
+		AssertPlayerWin(t, playerStore, "Ani")
+	})
 	t.Run("it schedules printing of blind values", func(t *testing.T) {
 		in := strings.NewReader("Ani wins\n")
 		playerStore := &StubPlayerStore{}
@@ -66,7 +63,7 @@ func TestCLI(t *testing.T) {
 		}
 
 		for i, want := range cases {
-			t.Run(fmt.Sprintf(want.String()), func(t *testing.T) {
+			t.Run(fmt.Sprint(want.String()), func(t *testing.T) {
 
 				if len(blindAlerter.Alerts) <= i {
 					t.Fatalf("alert %d was not scheduled %v", i, blindAlerter.Alerts)

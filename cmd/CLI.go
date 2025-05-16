@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -11,8 +12,22 @@ import (
 )
 
 type BlindAlerter interface {
-	ScheduleAlertAt(duration time.Duration, amount int)
+	ScheduledAlertAt(duration time.Duration, amount int)
 }
+
+type BlindAlerterFunc func(duration time.Duration, amount int)
+
+func (a BlindAlerterFunc) ScheduledAlertAt(duration time.Duration, amount int) {
+	a(duration, amount)
+
+}
+
+func StdOutAlerter(duration time.Duration, amount int) {
+	time.AfterFunc(duration, func() {
+		fmt.Fprintf(os.Stdout, "Blind is now %d\n", amount)
+	})
+}
+
 type CLI struct {
 	PlayerStore server.PlayerStore
 	In          *bufio.Scanner
@@ -36,7 +51,7 @@ func (cli *CLI) PlayPokerWithBlindAlerter() {
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
-		cli.Alerter.ScheduleAlertAt(blindTime, blind)
+		cli.Alerter.ScheduledAlertAt(blindTime, blind)
 		blindTime += 10 * time.Minute
 	}
 	reader := cli.readline()
@@ -71,7 +86,7 @@ func (cli *CLI) readline() string {
 }
 
 /*---------------------------------------------------------------*/
-func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
 	s.Alerts = append(s.Alerts, ScheduledAlert{At: duration, Amount: amount})
 }
 
