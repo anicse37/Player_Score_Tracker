@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	// dummyBlindAlerter = &cmd.SpyBlindAlerter{}
+	DummyBlindAlerter = &cmd.SpyBlindAlerter{}
 	// dummySpyAlerter   = &cmd.SpyBlindAlerter{}
 	dummyPlayerStore = &StubPlayerStore{}
 	// dummyStdIn       = &bytes.Buffer{}
@@ -25,7 +25,8 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("7\n")
 		blindAlerter := &cmd.SpyBlindAlerter{}
 
-		cli := cmd.NewCLI(dummyPlayerStore, in, stdout, blindAlerter)
+		game := cmd.NewGame(blindAlerter, dummyPlayerStore)
+		cli := cmd.NewCLI(in, stdout, game)
 		cli.PlayPoker()
 
 		got := stdout.String()
