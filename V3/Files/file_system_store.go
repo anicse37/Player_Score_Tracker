@@ -8,21 +8,21 @@ import (
 	"sort"
 )
 
-type PlayerReadWriteSeeker struct {
+type PlayerSeeker struct {
 	Database *json.Encoder
 	league   League
 }
 
 /*---------------------------------------------------------------*/
 
-func (f *PlayerReadWriteSeeker) GetLeague() League {
+func (f *PlayerSeeker) GetLeague() League {
 	sort.Slice(f.league, func(i, j int) bool {
 		return f.league[i].Wins > f.league[j].Wins
 	})
 	return f.league
 }
 
-func (f *PlayerReadWriteSeeker) GetPlayerScore(name string) int {
+func (f *PlayerSeeker) GetPlayerScore(name string) int {
 	player := f.league.Find(name)
 	if player != nil {
 		return player.Wins
@@ -31,7 +31,7 @@ func (f *PlayerReadWriteSeeker) GetPlayerScore(name string) int {
 }
 
 /*-------------RecordWin---------------*/
-func (f *PlayerReadWriteSeeker) RecordWin(name string) {
+func (f *PlayerSeeker) RecordWin(name string) {
 	player := f.league.Find(name)
 
 	if player != nil {
@@ -43,7 +43,7 @@ func (f *PlayerReadWriteSeeker) RecordWin(name string) {
 }
 
 /*------------------------------------------------------------*/
-func NewPlayerReadWriteSeeker(file *os.File) (*PlayerReadWriteSeeker, error) {
+func NewPlayerSeeker(file *os.File) (*PlayerSeeker, error) {
 	err := InitialisePlayerDBFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("problem initilising player db file %v", err)
@@ -56,7 +56,7 @@ func NewPlayerReadWriteSeeker(file *os.File) (*PlayerReadWriteSeeker, error) {
 		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
 	}
 
-	return &PlayerReadWriteSeeker{
+	return &PlayerSeeker{
 			Database: json.NewEncoder(&Tape{File: file}),
 			league:   league,
 		},
@@ -80,7 +80,7 @@ func InitialisePlayerDBFile(file *os.File) error {
 
 /*------------------------------------------------------------*/
 
-func PlayerReadWriteSeekerFromFile(path string) (*PlayerReadWriteSeeker, func(), error) {
+func PlayerSeekerFromFile(path string) (*PlayerSeeker, func(), error) {
 	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return nil, nil, fmt.Errorf("problem opening %s %v", path, err)
@@ -89,7 +89,7 @@ func PlayerReadWriteSeekerFromFile(path string) (*PlayerReadWriteSeeker, func(),
 		db.Close()
 	}
 
-	store, err := NewPlayerReadWriteSeeker(db)
+	store, err := NewPlayerSeeker(db)
 	if err != nil {
 		return nil, nil, fmt.Errorf("problem creating file system player store, %v", err)
 	}

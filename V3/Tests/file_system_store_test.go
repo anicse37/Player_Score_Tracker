@@ -17,7 +17,7 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store, err := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerSeeker(database)
 		AssertNoError(t, err)
 		got := store.GetLeague()
 		want := files.League{
@@ -38,7 +38,7 @@ func TestReadUsingFiles(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store, err := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerSeeker(database)
 		AssertNoError(t, err)
 
 		got := store.GetPlayerScore("Player-1")
@@ -57,7 +57,7 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store, err := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerSeeker(database)
 		AssertNoError(t, err)
 
 		store.RecordWin("Player-2")
@@ -74,7 +74,7 @@ func TestRecordWin(t *testing.T) {
 		]`)
 		defer cleanDatabase()
 
-		store, err := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerSeeker(database)
 
 		AssertNoError(t, err)
 
@@ -90,7 +90,7 @@ func TestFunctions(t *testing.T) {
 		database, cleanDatabase := CreateTempFile(t, "")
 		defer cleanDatabase()
 
-		_, err := files.NewPlayerReadWriteSeeker(database)
+		_, err := files.NewPlayerSeeker(database)
 
 		AssertNoError(t, err)
 
@@ -101,7 +101,7 @@ func TestFunctions(t *testing.T) {
 		{"Name": "Chris","Wins" : 10}]`)
 		defer cleanDatabase()
 
-		store, err := files.NewPlayerReadWriteSeeker(database)
+		store, err := files.NewPlayerSeeker(database)
 		AssertNoError(t, err)
 
 		got := store.GetLeague()

@@ -13,7 +13,7 @@ const (
 )
 
 func main() {
-	store, closeFunc, err := files.PlayerReadWriteSeekerFromFile(dbFileName)
+	store, closeFunc, err := files.PlayerSeekerFromFile(dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}

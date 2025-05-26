@@ -13,7 +13,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 	database, cleanDatabase := CreateTempFile(t, `[]`)
 	defer cleanDatabase()
-	store, err := files.NewPlayerReadWriteSeeker(database)
+	store, err := files.NewPlayerSeeker(database)
 
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one, %v", err)
