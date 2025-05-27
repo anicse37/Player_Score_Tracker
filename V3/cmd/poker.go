@@ -12,15 +12,20 @@ type Poker struct {
 }
 
 type GameSpy struct {
-	StartWith    int
-	FinishedWith string
+	StartCalled     bool
+	StartCalledWith int
+
+	FinishedCalled     bool
+	FinishedCalledWith string
 }
 
 func (g *GameSpy) Start(numberOfPlayers int) {
-	g.StartWith = numberOfPlayers
+	g.StartCalled = true
+	g.StartCalledWith = numberOfPlayers
 }
 func (g *GameSpy) Finish(winner string) {
-	g.FinishedWith = winner
+	g.FinishedCalled = true
+	g.FinishedCalledWith = winner
 }
 
 func (p *Poker) Start(numberOfPlayers int) {

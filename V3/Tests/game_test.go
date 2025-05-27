@@ -60,10 +60,21 @@ func TestGame_Start(t *testing.T) {
 		if gotPrompt != wantPrompt {
 			t.Errorf("Got %v || want %v", gotPrompt, wantPrompt)
 		}
-		if game.StartWith != 7 {
-			t.Errorf("wanted to start with 7 but got %v", game.StartWith)
+		if game.StartCalledWith != 7 {
+			t.Errorf("wanted to start with 7 but got %v", game.StartCalledWith)
 		}
+	})
+	t.Run("itprints an error when a non numeric value i entered", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		in := strings.NewReader("Pies\n")
+		game := &cmd.GameSpy{}
 
+		cli := cmd.NewCLI(in, stdout, game)
+		cli.PlayPoker()
+
+		if game.StartCalled {
+			t.Errorf("Game shot have started")
+		}
 	})
 }
 func TestGame_Finish(t *testing.T) {
@@ -78,11 +89,9 @@ func TestGame_Finish(t *testing.T) {
 func checkSchedulingCases(cases []cmd.ScheduledAlert, t *testing.T, blindAlerter *cmd.SpyBlindAlerter) {
 	for i, want := range cases {
 		t.Run(fmt.Sprint(want), func(t *testing.T) {
-
 			if len(blindAlerter.Alerts) <= i {
 				t.Fatalf("alert %d was not scheduled %v", i, blindAlerter.Alerts)
 			}
-
 			got := blindAlerter.Alerts[i]
 			AssertScheduledAlert(t, got.String(), want.String())
 		})
