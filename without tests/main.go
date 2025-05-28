@@ -16,7 +16,7 @@ func main() {
 	defer closeFile()
 
 	server := servers.NewPlayerServer(File)
-	if err := http.ListenAndServe(":8080", server); err != nil {
-		log.Fatalf("Could not listn on port :8080 %v", err)
+	if err := http.ListenAndServe(":5050", server); err != nil {
+		log.Fatalf("Could not listn on port :5050 %v", err)
 	}
 }
