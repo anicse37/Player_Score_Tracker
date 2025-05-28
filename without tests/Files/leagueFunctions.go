@@ -4,60 +4,62 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
-	"sort"
 )
 
-type Tape struct {
-	File *os.File
-}
-
-func (t *Tape) Write(p []byte) (n int, err error) {
-	t.File.Truncate(0)
-	t.File.Seek(0, io.SeekStart)
-	return t.File.Write(p)
-}
-
-func NewLeague(rdr io.Reader) (League, error) {
-	var league League
-	err := json.NewDecoder(rdr).Decode(&league)
+func PlayerDataFromFiles() (*PlayerDatabase, func(), error) {
+	db, err := os.OpenFile("PlayerData.json", os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		err = fmt.Errorf("error parsing league, %v", err)
+		return nil, nil, err
 	}
-	return league, err
+	closeFile := func() {
+		db.Close()
+	}
+	store, err := NewPlayerData(db)
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem creating file system player store, %v", err)
+	}
+
+	return store,
+		closeFile,
+		nil
+}
+func NewPlayerData(file *os.File) (*PlayerDatabase, error) {
+	err := isFileNew(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading players info %v", err)
+	}
+	league, err := JsonFileToLeague(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &PlayerDatabase{
+		jsonFile: json.NewEncoder(&Tape{File: file}),
+		league:   league,
+	}, nil
 }
 
-func (l League) Find(name string) *Player {
-	for i, player := range l {
-		if player.Name == name {
-			return &l[i]
-		}
+func isFileNew(file *os.File) error {
+	file.Seek(0, io.SeekStart)
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("problem getting file info %v", err)
+	}
+
+	if fileInfo.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, io.SeekStart)
 	}
 	return nil
 }
 
-func (f *PlayerSeeker) GetLeague() League {
-	sort.Slice(f.league, func(i, j int) bool {
-		return f.league[i].Wins > f.league[j].Wins
-	})
-	return f.league
-}
-
-func (f *PlayerSeeker) GetPlayerScore(name string) int {
-	player := f.league.Find(name)
-
-	if player != nil {
-		return player.Wins
+func JsonFileToLeague(file io.Reader) (League, error) {
+	var league League
+	err := json.NewDecoder(file).Decode(&league)
+	if err != nil {
+		err = fmt.Errorf("error decoding file %v", err)
 	}
-	return 0
-}
-
-func (f *PlayerSeeker) RecordWin(name string) {
-	player := f.league.Find(name)
-	if player != nil {
-		player.Wins++
-	} else {
-		f.league = append(f.league, Player{Name: name, Wins: 1})
-	}
-	f.Database.Encode(f.league)
+	return league, err
 }

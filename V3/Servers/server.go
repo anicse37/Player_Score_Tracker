@@ -54,6 +54,7 @@ func (p *PlayerServer) PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
 /*------------------------------------------------------------------*/
 func (p *PlayerServer) MethodGetFunction(w http.ResponseWriter, player string) {
 	status := p.Store.GetPlayerScore(player)

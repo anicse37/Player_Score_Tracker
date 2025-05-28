@@ -2,8 +2,8 @@ package files
 
 import (
 	"encoding/json"
-	"net/http"
-	"time"
+	"io"
+	"os"
 )
 
 type Player struct {
@@ -12,25 +12,24 @@ type Player struct {
 }
 type League []Player
 
-type PlayerSeeker struct {
-	Database *json.Encoder
+func NewPlayer(name string) *Player {
+	return &Player{
+		Name: name,
+		Wins: 1,
+	}
+}
+
+type PlayerDatabase struct {
+	jsonFile *json.Encoder
 	league   League
 }
 
-type ScheduledAlert struct {
-	At     time.Duration
-	Anount int
-}
-type SpyBlindAlerter struct {
-	Alerts []ScheduledAlert
+type Tape struct {
+	File *os.File
 }
 
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-	GetLeague() League
-}
-type PlayerServer struct {
-	Store PlayerStore
-	http.Handler
+func (t *Tape) Write(data []byte) (n int, err error) {
+	t.File.Truncate(0)
+	t.File.Seek(0, io.SeekStart)
+	return t.File.Write(data)
 }
